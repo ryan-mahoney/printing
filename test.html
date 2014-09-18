@@ -26,15 +26,31 @@ background-color: #7e3878;
 color: #ffffff;
 }
 
-.cols3 {
-       -moz-column-count: 3;
-       -moz-column-gap: 20px;
-       -webkit-column-count: 3;
-       -webkit-column-gap: 20px;
+.column > p{
+	padding-right: 40px;
+}
+
+.column.last > p {
+	padding-right: 0;
+	padding-left: 40px;
+}
+
+.page.inner {
+	margin: 100px;
 }
 </style>
 
-<script src="https://raw.githubusercontent.com/BetleyWhitehorne/CSS3MultiColumn/master/css3-multi-column.min.js"></script>
+<script src="javascripts/jquery.js"></script>
+<script src="javascripts/jquery.columnizer.js"></script>
+<script>
+$(function () {
+	$col = $('.two.columns');
+	$col.find('table, thead, tbody, tfoot, colgroup, caption, label, legend, script, style, textarea, button, object, embed, tr, th, td, li, h1, h2, h3, h4, h5, h6, form').addClass('dontsplit');
+	$col.find('h1, h2, h3, h4, h5, h6').addClass('dontend');
+	$col.find('br').addClass('removeiflast').addClass('removeiffirst');
+	$col.columnize({ columns: 2 });
+});
+</script>
 </head>
 <body>
 
@@ -46,10 +62,20 @@ color: #ffffff;
 Page 2
 </div>
 
-<div class="page cols3">
+<div class="inner page two columns">
+<p>
 amet est sollicitudin, laoreet ante non, faucibus lectus. Donec consectetur diam augue, eget sodales ante vulputate vel. Cras pulvinar mi magna, ut auctor enim luctus at. In ullamcorper eleifend nisi, in mollis dui elementum eget. Sed sagittis velit at augue finibus, quis rutrum arcu vehicula. Pellentesque ligula ipsum, sodales in pharetra in, aliquam eu erat. Praesent eu tellus purus. Mauris luctus molestie metus ac faucibus.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras fermentum massa in mollis varius. Aliquam gravida diam fermentum condimentum bibendum. Sed eget laoreet dolor, eu tristique lorem. Vestibulum lacinia odio vitae tortor hendrerit, nec aliquam orci luctus. Phasellus blandit mauris arcu, sit amet scelerisque mi imperdiet et. Fusce vel ipsum nec velit vulputate rhoncus. Maecenas convallis pulvinar vestibulum. Pellentesque eget arcu sed augue sollicitudin lacinia vitae quis mauris. Pellentesque ut gravida lorem. Nullam ut risus sagittis, aliquet nibh a, cursus odio. Curabitur ultrices pharetra felis. Fusce hendrerit erat et lacus efficitur, nec cursus odio suscipit. Aenean eget felis convallis, consectetur dolor et, venenatis enim. Sed posuere mi arcu, vitae dapibus odio mattis at.
+
+
+<div class="img left">
+	<img src="" />
+	<p>Some description text, optionally</p>
+</div>
+
+
+<blockquote class="invert">Here is a block quote</blockquote>
 
 Duis semper est odio, eu hendrerit dolor euismod at. Quisque pretium augue ex, id aliquam lacus lacinia sit amet. Nunc nec orci porttitor, pulvinar libero et, sagittis ante. Nullam nec dapibus urna. Donec quis arcu gravida, tristique libero ac, tincidunt felis. Nunc vehicula turpis at nibh elementum commodo. Maecenas nec metus quis diam tristique faucibus. Fusce id interdum enim. Sed ex nunc, rhoncus sed sem sit amet, rhoncus sollicitudin urna. Etiam lectus elit, varius id sapien eget, lacinia tristique neque. Curabitur in massa metus. Fusce ante velit, feugiat congue pretium id, vestibulum eget urna. Phasellus tortor elit, elementum aliquet tristique sit amet, bibendum id sem. Sed sit amet porttitor turpis.
 
@@ -125,7 +151,8 @@ Duis semper est odio, eu hendrerit dolor euismod at. Quisque pretium augue ex, i
 
 Ut scelerisque ipsum id pretium aliquet. Etiam eu scelerisque diam. Duis ultrices molestie luctus. Aenean mollis sodales erat, ac ultrices neque ullamcorper ut. Vivamus non cursus dui. In hac habitasse platea dictumst. Sed posuere lorem lacus, vel convallis mi aliquam malesuada. Quisque viverra aliquam ante vestibulum vestibulum. Vivamus in odio ultrices, ultricies ex vel, pharetra ipsum. Morbi vel felis posuere, facilisis sapien in, placerat eros. Ut a pellentesque nunc. Maecenas blandit massa erat, at tempor nisi suscipit id. Nam varius convallis congue. Morbi nec aliquam eros. Fusce eget augue egestas, varius nisl ut, molestie risus. Mauris sit amet arcu ac felis dapibus pellentesque.
 
-Curabitur dignissim pulvinar mauris, vitae tristique leo tincidunt at. Donec magna nisl, venenatis eget ullamcorper quis, bibendum a nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam et rhoncus nisi. Nullam bibendum, sem a eleifend elementum, turpis sem porta ex, quis placerat ipsum augue et ex. Maecenas ac aliquet nibh, ac mollis velit. Sed ut dui felis. Nam id sodales turpis. Nam laoreet dolor sed est iaculis dapibus ut sed dui. Nullam hendrerit porttitor felis, ac porttitor ante ornare ut. Quisque a ante non dolor porttitor bibendum quis at diam. Praesent volutpat vitae sem id dapibus. Etiam auctor quam massa, vitae vulputate mi interdum ac. Maecenas aliquet ipsum purus, vitae facilisis neque hendrerit at.	
+Curabitur dignissim pulvinar mauris, vitae tristique leo tincidunt at. Donec magna nisl, venenatis eget ullamcorper quis, bibendum a nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam et rhoncus nisi. Nullam bibendum, sem a eleifend elementum, turpis sem porta ex, quis placerat ipsum augue et ex. Maecenas ac aliquet nibh, ac mollis velit. Sed ut dui felis. Nam id sodales turpis. Nam laoreet dolor sed est iaculis dapibus ut sed dui. Nullam hendrerit porttitor felis, ac porttitor ante ornare ut. Quisque a ante non dolor porttitor bibendum quis at diam. Praesent volutpat vitae sem id dapibus. Etiam auctor quam massa, vitae vulputate mi interdum ac. Maecenas aliquet ipsum purus, vitae facilisis neque hendrerit at.
+</p>
 </div>
 
 </body>
