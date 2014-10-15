@@ -42,9 +42,19 @@ svg {
     height: 70%;
 }
 
+.implement > svg {
+    width: 60%;
+    height: 60%;   
+}
+
+.planning > svg {
+    width: 65%;
+    height: 65%;   
+}
+
 div.section {
-    width: 300px;
-    height: 300px;
+    width: 400px;
+    height: 400px;
     margin: 0 auto;
 }
 
@@ -52,10 +62,17 @@ div.section h2 {
     width: 100%;
     text-align: center;
     font-family: pt_sansbold, sans-serif;
+    color: #002960;
 }
 
 .column {
     text-align: center;
+}
+
+p {
+    text-align: center;
+    padding-top: 30px;
+    font-family: Helvetica, Arial, sans-serif;
 }
 </style>
 
@@ -95,27 +112,33 @@ $(function () {
     <div class="column">
         <div class="section">
             <div class="circle">
+                <div class="ui label">Phase<div class="detail">1</div></div>
                 <img src="audit.svg" class="svg">
             </div>
-            <h2>Audit</h2>
+            <h2>Audit &amp; Cleanup</h2>
+            <p>Leverage existing code and infrastructure, making enhancements where needed.</p>
         </div>
     </div>
 
     <div class="column">
         <div class="section">
-            <div class="circle">
+            <div class="circle planning">
+                <div class="ui label">Phase<div class="detail">2</div></div>
                 <img src="planning.svg" class="svg">
             </div>
-            <h2>Plan</h2>
+            <h2>Plan &amp; Architecture</h2>
+            <p>Innovating the Exagoga collaboration e-commerce platform through new features.</p>
         </div>
     </div>
 
     <div class="column">
         <div class="section">
-            <div class="circle">
+            <div class="circle implement">
+                <div class="ui label">Phase<div class="detail">3</div></div>
                 <img src="execute.svg" class="svg">
             </div>
-            <h2>Implement</h2>
+            <h2>Implementation</h2>
+            <p>Building a team that embraced best practices in Magento and PHP.</p>
         </div>
     </div>
     
