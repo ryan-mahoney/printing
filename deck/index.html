@@ -11,11 +11,17 @@ html, body {
     height: 100%;
 }
 
+div.page {
+    page-break-before: always;
+    clear: both;
+    position: relative;
+    padding: 50px;
+}
+
 h1 {
     font-family: pt_sansbold, sans-serif;
     font-size: 2rem;
     color: #002960;
-    padding: 50px;
 }
 
 .circle {
@@ -74,11 +80,14 @@ div {
 }
 
 p {
-    text-align: center;
-    padding-top: 30px;
     font-family: Helvetica, Arial, sans-serif;
     font-size: 1.5rem;
     color: #666;
+}
+
+.section > p {
+    text-align: center;
+    padding-top: 30px;
 }
 
 .ui.label, .ui.label .detail {
@@ -116,46 +125,50 @@ $(function () {
 </head>
 <body>
 
-<h1>Exagoga Technology</h1>
-<p>Overview</p>
+<div class="page">
+    <h1>Exagoga Technology</h1>
+    <p>Overview</p>
 
-<br><br><br><br>
+    <br><br><br><br>
 
-<div class="ui three column grid">
-    
-    <div class="column">
-        <div class="section">
-            <div class="circle">
-                <div class="ui label">Phase<div class="detail">1</div></div>
-                <img src="audit.svg" class="svg">
+    <div class="ui three column grid">
+        
+        <div class="column">
+            <div class="section">
+                <div class="circle">
+                    <div class="ui label">Phase<div class="detail">1</div></div>
+                    <img src="audit.svg" class="svg">
+                </div>
+                <h2>Audit &amp; Cleanup</h2>
+                <p>Leverage existing code and infrastructure, make enhancements where needed.</p>
             </div>
-            <h2>Audit &amp; Cleanup</h2>
-            <p>Leverage existing code and infrastructure, make enhancements where needed.</p>
         </div>
-    </div>
 
-    <div class="column">
-        <div class="section">
-            <div class="circle planning">
-                <div class="ui label">Phase<div class="detail">2</div></div>
-                <img src="planning.svg" class="svg">
+        <div class="column">
+            <div class="section">
+                <div class="circle planning">
+                    <div class="ui label">Phase<div class="detail">2</div></div>
+                    <img src="planning.svg" class="svg">
+                </div>
+                <h2>Plan &amp; Architect</h2>
+                <p>Innovate the Exagoga collaborative e-commerce platform through new features and designs.</p>
             </div>
-            <h2>Plan &amp; Architect</h2>
-            <p>Innovate the Exagoga collaborative e-commerce platform through new features and designs.</p>
         </div>
-    </div>
 
-    <div class="column">
-        <div class="section">
-            <div class="circle implement">
-                <div class="ui label">Phase<div class="detail">3</div></div>
-                <img src="execute.svg" class="svg">
+        <div class="column">
+            <div class="section">
+                <div class="circle implement">
+                    <div class="ui label">Phase<div class="detail">3</div></div>
+                    <img src="execute.svg" class="svg">
+                </div>
+                <h2>Implement</h2>
+                <p>Build a capable team, embrace the best practices of Magento and PHP.</p>
             </div>
-            <h2>Implement</h2>
-            <p>Build a capable team, embrace the best practices of Magento and PHP.</p>
-        </div>
+        </div>    
     </div>
-    
+</div>
+<div class="page">
+Page 2?
 </div>
 </body>
 </html>
