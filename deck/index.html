@@ -33,6 +33,10 @@ h1 {
     position: relative;
 }
 
+.subpage .circle {
+    opacity: .2;
+}
+
 svg * {
     fill: #fff;
 }
@@ -94,6 +98,11 @@ p {
     opacity: 1 !important;
     font-size: 1rem !important;
 }
+
+.mylist {
+    font-weight: bold;
+    font-size: 1.2rem !important;
+}
 </style>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -125,7 +134,7 @@ $(function () {
 </head>
 <body>
 
-<div class="page">
+<div class="page" style="display: none">
     <h1>Exagoga Technology</h1>
     <p>Overview</p>
 
@@ -167,8 +176,36 @@ $(function () {
         </div>    
     </div>
 </div>
-<div class="page">
-Page 2?
+
+<div class="page subpage">
+
+    <h1>Exagoga Technology</h1>
+    <p>Audit &amp; Cleanp</p>
+
+    <br><br><br><br>
+
+    <div class="ui two column grid">
+
+        <div class="column">
+            <div class="section">
+                <div class="circle">
+                    <img src="audit.svg" class="svg">
+                </div>
+            </div>
+        </div>
+
+        <div class="column mylist">
+
+<br><br><br>
+1. Fix Known Performance Issues<br><br>
+2. Review Infrastructure, Backups<br><br>
+3. Enhance User Experience<br><br>
+4. Close-Loop on Analytics Integrations<br><br>
+5. Document Custom Business Logic
+        </div>
+
+    </div>
+
 </div>
 </body>
 </html>
