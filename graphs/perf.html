@@ -1,0 +1,274 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8">
+        <script src="libs/jquery.min.js"></script>
+        <link href="libs/nv.d3.css" rel="stylesheet">
+        <script src="libs/d3.v3.js"></script>
+        <script src="libs/nv.d3.js"></script>
+        <link rel="stylesheet" type="text/css" href="semantic/packaged/css/semantic.css">
+        <link rel="stylesheet" type="text/css" href="css/page.css"> 
+    </head>
+    <body>
+        <div class="page">
+            <h1>Benchmarks</h1>
+            <h2>Seating</h2>
+            <div class="ui three column grid" style="height: 600px">
+                <div class="column">
+                    Time (seconds)
+                    <div id="chart-seat-time"><svg></svg></div>
+                </div>
+                <div class="column">
+                    # of Queries
+                    <div id="chart-seat-queries"><svg></svg></div>
+                </div>
+                <div class="column">
+                    Memory (MB)
+                    <div id="chart-seat-memory"><svg></svg></div>
+                </div>
+            </div>
+        </div>
+        <div class="page">
+            <h1>Benchmarks</h1>
+            <h2>Seating &gt; Chairs</h2>
+            <div class="ui three column grid" style="height: 600px">
+                <div class="column">
+                    Time (seconds)
+                    <div id="chart-chairs-time"><svg></svg></div>
+                </div>
+                <div class="column">
+                    # of Queries
+                    <div id="chart-chairs-queries"><svg></svg></div>
+                </div>
+                <div class="column">
+                    Memory (MB)
+                    <div id="chart-chairs-memory"><svg></svg></div>
+                </div>
+            </div>
+        </div>
+        <div class="page">
+            <h1>Benchmarks</h1>
+            <h2>Rugs</h2>
+            <div class="ui three column grid" style="height: 600px">
+                <div class="column">
+                    Time (seconds)
+                    <div id="chart-rugs-time"><svg></svg></div>
+                </div>
+                <div class="column">
+                    # of Queries
+                    <div id="chart-rugs-queries"><svg></svg></div>
+                </div>
+                <div class="column">
+                    Memory (MB)
+                    <div id="chart-rugs-memory"><svg></svg></div>
+                </div>
+            </div>
+        </div>
+
+<script>
+nv.addGraph(function() {
+    var chart = nv.models.discreteBarChart()
+        .x(function(d) { return d.label })    //Specify the data accessors.
+        .y(function(d) { return d.value })
+        .staggerLabels(false)    //Too many bars and not enough room? Try staggering labels.
+        .tooltips(false)        //Don't show tooltips
+        .showValues(true)       //...instead, show the bar value right on top of each bar.
+        .transitionDuration(0);
+
+    //SEAT SECTION 
+    d3.select('#chart-seat-time svg')
+        .datum([{
+            values: [{
+                "label": "Base",
+                "value": 10,
+                "color": "#009A93"
+            }, { 
+                "label": "Saleable", 
+                "value": 7.3,
+                "color": "#009A93"
+            }, { 
+                "label": "Images", 
+                "value": 6.5,
+                "color": "#009A93"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 1.6,
+                "color": "#009A93"
+            }]
+        }]).call(chart);
+
+    d3.select('#chart-seat-queries svg')
+        .datum([{
+            values: [{ 
+                "label": "Base",
+                "value": 414,
+                "color": "#564F8A"
+            }, { 
+                "label": "Saleable", 
+                "value": 297,
+                "color": "#564F8A"
+            }, { 
+                "label": "Images", 
+                "value": 139,
+                "color": "#564F8A"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 126,
+                "color": "#564F8A"
+            }]
+        }]).call(chart);
+    
+    d3.select('#chart-seat-memory svg')
+        .datum([{
+            values: [{ 
+                "label": "Base",
+                "value": 212,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Saleable", 
+                "value": 209,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Images", 
+                "value": 209,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 56,
+                "color": "#6ECFF5"
+            }]
+        }]).call(chart);
+
+    //CHAIRS
+    d3.select('#chart-chairs-time svg')
+        .datum([{
+            values: [{
+                "label": "Base",
+                "value": 8.6,
+                "color": "#009A93"
+            }, { 
+                "label": "Saleable", 
+                "value": 4.1,
+                "color": "#009A93"
+            }, { 
+                "label": "Images", 
+                "value": 3.6,
+                "color": "#009A93"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 1.1,
+                "color": "#009A93"
+            }]
+        }]).call(chart);
+
+    d3.select('#chart-chairs-queries svg')
+        .datum([{
+            values: [{ 
+                "label": "Base",
+                "value": 440,
+                "color": "#564F8A"
+            }, { 
+                "label": "Saleable", 
+                "value": 310,
+                "color": "#564F8A"
+            }, { 
+                "label": "Images", 
+                "value": 150,
+                "color": "#564F8A"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 137,
+                "color": "#564F8A"
+            }]
+        }]).call(chart);
+    
+    d3.select('#chart-chairs-memory svg')
+        .datum([{
+            values: [{ 
+                "label": "Base",
+                "value": 148,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Saleable", 
+                "value": 147,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Images", 
+                "value": 146,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 53,
+                "color": "#6ECFF5"
+            }]
+        }]).call(chart);
+
+    //RUGS
+    d3.select('#chart-rugs-time svg')
+        .datum([{
+            values: [{
+                "label": "Base",
+                "value": 91,
+                "color": "#009A93"
+            }, { 
+                "label": "Saleable", 
+                "value": 13,
+                "color": "#009A93"
+            }, { 
+                "label": "Images", 
+                "value": 12,
+                "color": "#009A93"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 1.8,
+                "color": "#009A93"
+            }]
+        }]).call(chart);
+
+    d3.select('#chart-rugs-queries svg')
+        .datum([{
+            values: [{ 
+                "label": "Base",
+                "value": 633,
+                "color": "#564F8A"
+            }, { 
+                "label": "Saleable", 
+                "value": 297,
+                "color": "#564F8A"
+            }, { 
+                "label": "Images", 
+                "value": 137,
+                "color": "#564F8A"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 125,
+                "color": "#564F8A"
+            }]
+        }]).call(chart);
+    
+    d3.select('#chart-rugs-memory svg')
+        .datum([{
+            values: [{ 
+                "label": "Base",
+                "value": 627,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Saleable", 
+                "value": 187,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Images", 
+                "value": 182,
+                "color": "#6ECFF5"
+            }, { 
+                "label": "Attr. Cache", 
+                "value": 50,
+                "color": "#6ECFF5"
+            }]
+        }]).call(chart);
+
+    return chart;
+});
+</script>
+
+    </body>
+</html>

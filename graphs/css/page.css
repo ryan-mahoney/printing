@@ -1,0 +1,29 @@
+@font-face{ font-family: pt_sansbold; src: url('pt_sans-web-bold-webfont.svg') format('svg'); }
+
+html, body {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+div.page {
+    page-break-before: always;
+    clear: both;
+    position: relative;
+    padding: 50px;
+}
+
+h1 {
+    font-family: pt_sansbold, sans-serif;
+    font-size: 2rem;
+    color: #002960;
+}
+
+h2 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.5rem;
+    color: #002960;
+    font-weight: normal;
+}
