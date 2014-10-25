@@ -8,15 +8,27 @@
         <script src="libs/nv.d3.js"></script>
         <link rel="stylesheet" type="text/css" href="semantic/packaged/css/semantic.css">
         <link rel="stylesheet" type="text/css" href="css/page.css">
+        <link rel="stylesheet" href="highlight/styles/monokai_sublime.css">
+        <script src="highlight/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
         <style>
 
 .ui.three.column.grid > .row > .column, .ui.three.column.grid > .column, .ui.grid > .three.column.row > .column {
     width: 500px !important;
 }
 
+pre {
+    font-family: monospace;
+}
         </style>
     </head>
     <body>
+        <div class="page">
+            <h1>Overview</h1>
+            <br />
+            <p>This report is divided into four sections: Benchmarks, Methodology, Optimizations, New Code. This report covers the specific optimizations made to the catalog list display of the imaestri.com website, their impact and is a resource for making the entire imaestri.com website performant while adhering to the best practices of Magento. 
+            </p>
+        </div>
         <div class="page">
             <h1>Benchmarks</h1>
             <h2>Seating</h2>
@@ -70,6 +82,320 @@
                     <div id="chart-rugs-memory"><svg></svg></div>
                 </div>
             </div>
+        </div>
+        <div class="page">
+            <h1>Methodology</h1>
+            <br />
+            <p>
+<strong>Aoe_Profiler</strong><br>
+The Aoe_Profiler is a custom Magento extension that adds additional features to the built-in Mangento profiling capabilities. A custom GET request parameter was sent to the catalog pages, which generated a hierarchical tree view in the page footer.  This view showed where time was spent in generating the page in a helpful visual format.  This tool provided insight into the worst problem areas of the page.
+
+<br><br>
+
+<strong>Xdebug / Kcachegrind</strong><br>
+Xdebug is the standard PHP profiling tool. It has similar functionality to the Magento profiler, but with exhaustive detail.  This tool was used to gain further insight once problem areas were identified from a high level.
+
+<br><br>
+
+<strong>MySQL Query Log & EXPLAIN Command</strong><br>
+MySQL can be configured to generate a log of all of the SQL commands it executes. By anayzing this log it became easier to see where multiple repetitive queries were being run.  Additionally, the EXPLAIN command was used to see where indexes were being utilized and how newer optimized queries perform against the original queries.            
+            </p>
+        </div>
+
+        <div class="page">
+            <h1>Optimizations</h1>
+            <h2>Saleable Check</h2>
+            <br />
+            <p>
+
+It is well established within the Magento community that the “isSaleable” call is inefficient.  The impact of this check is minimal for simple products, but once compose products are used it becomes costly as it runs individual queries to check each sub-product.  If there are 20 products being displayed, and each one had 20 sub-products, then this one call would generate 400 queries.  To fix this, the check has simply been commented out.  If this functionality becomes necessary in the future, a cache can be created and maintained that stores this information more efficiently so one query can be ran to obtain this information.
+
+<br><br>
+
+<i>Reference:</i><br>
+<pre>
+app/design/frontend/enterprise/exagoga/template/catalog/product/list.phtml
+lines: 109, 208
+$_product->isSaleable()
+</pre>
+            </p>
+        </div>
+
+        <div class="page">
+            <h1>Optimizations</h1>
+            <h2>Product Images Query Reduction</h2>
+            <br />
+            <p>
+
+The catalogs display page shows a grid of images where each images is a slider of nested images. In the original implementation, additional queries are run to obtain all of the gallery images for a product. Without changing the existing scheme or creating any additional cache this was converted to a single query.
+
+<br><br>
+
+<i>Reference:</i><br>
+<pre>
+app/design/frontend/enterprise/exagoga/template/catalog/product/list.phtml
+lines: 62, 168
+$images = $product->getMediaGalleryImages();
+</pre>
+            </p>
+        </div>
+
+
+        <div class="page">
+            <h1>Optimizations</h1>
+            <h2>Obtaining Attributes for Query Filtering Options</h2>
+            <br />
+            <p>
+
+The website is using layered navigation to give the user the option to filter products by price ranges and by certain product attributes. Magento does not provide an easy way to determine all of the attributes of all of the products and sub-products that belong to a category and its sub-categories. For this reason, there was excessive cyclical looping to determine this information.  A SQL based cache was created to provide this data in two queries.
+
+
+<br><br>
+
+<i>Reference:</i><br>
+<pre>
+app/code/local/Pixafy/Advfilters/Model/Catalog/Layer/Filter/Attribute.php
+lines: 142 - 275
+protected function _getItemsData()
+
+app/design/frontend/enterprise/exagoga/template/rangefilters/catalog/layer/filter/price.phtml
+lines: 6-17
+$minMaxPrices  =  Mage::helper('rangefilters')->calculateMinMaxPrice($this->getItems());
+</pre>
+            </p>
+        </div>
+
+        <div class="page">
+            <h1>New Code</h1>
+            <h2>SQL Queries</h2>
+            <pre><code class="sql">
+
+
+-- get products and sub-products together in one table with their associated category_id
+
+CREATE OR REPLACE VIEW catalog_category_product_relations AS
+SELECT category_id,
+       product_id
+FROM catalog_category_product
+UNION ALL
+SELECT prod.category_id,
+       sub.child_id
+FROM catalog_category_product AS prod
+INNER JOIN catalog_product_relation sub ON (prod.product_id = sub.parent_id);
+
+ -- cache a merging of diffent product attributes into one table
+
+DROP TABLE IF EXISTS catalog_product_entity_cache;
+
+
+CREATE TABLE catalog_product_entity_cache AS
+SELECT *
+FROM
+  ( SELECT ce.entity_id AS product_id,
+           cat.category_id,
+           ea.attribute_id,
+           ea.attribute_code,
+           CASE ea.backend_type
+               WHEN 'varchar' THEN ce_varchar.value
+               WHEN 'int' THEN ce_int.value
+               WHEN 'text' THEN ce_text.value
+               WHEN 'decimal' THEN ce_decimal.value
+               WHEN 'datetime' THEN ce_datetime.value
+               ELSE ea.backend_type
+           END AS value,
+           ea.is_required AS required
+   FROM catalog_product_entity AS ce
+   INNER JOIN catalog_category_product_relations AS cat ON ce.entity_id = cat.product_id
+   LEFT JOIN eav_attribute AS ea ON ce.entity_type_id = ea.entity_type_id
+   LEFT JOIN catalog_product_entity_varchar AS ce_varchar ON ce.entity_id = ce_varchar.entity_id
+   AND ea.attribute_id = ce_varchar.attribute_id
+   AND ea.backend_type = 'varchar'
+   LEFT JOIN catalog_product_entity_int AS ce_int ON ce.entity_id = ce_int.entity_id
+   AND ea.attribute_id = ce_int.attribute_id
+   AND ea.backend_type = 'int'
+   LEFT JOIN catalog_product_entity_text AS ce_text ON ce.entity_id = ce_text.entity_id
+   AND ea.attribute_id = ce_text.attribute_id
+   AND ea.backend_type = 'text'
+   LEFT JOIN catalog_product_entity_decimal AS ce_decimal ON ce.entity_id = ce_decimal.entity_id
+   AND ea.attribute_id = ce_decimal.attribute_id
+   AND ea.backend_type = 'decimal'
+   LEFT JOIN catalog_product_entity_datetime AS ce_datetime ON ce.entity_id = ce_datetime.entity_id
+   AND ea.attribute_id = ce_datetime.attribute_id
+   AND ea.backend_type = 'datetime') AS tab
+WHERE tab.value != ''
+  AND tab.value IS NOT NULL
+  AND attribute_code IN ('style',
+                         'int_length',
+                         'int_depth',
+                         'int_higth',
+                         'inches_seat_height',
+                         'product_designers_sync',
+                         'product_companies_sync',
+                         'filter_color',
+                         'ul_certification');
+
+
+DROP INDEX catalog_product_entity_cache_index ON catalog_product_entity_cache;
+
+
+CREATE INDEX catalog_product_entity_cache_index ON catalog_product_entity_cache (category_id);
+
+ -- cache attribute counts for each category
+
+DROP TABLE IF EXISTS catalog_product_entity_cache_by_category;
+
+
+CREATE TABLE catalog_product_entity_cache_by_category AS
+SELECT cpv.category_id,
+       ea.attribute_id,
+       ea.attribute_code,
+       ea.frontend_label,
+       eaov.option_id,
+       eaov.value,
+       count(*) AS COUNT
+FROM eav_attribute ea
+INNER JOIN eav_attribute_option AS eao ON eao.attribute_id = ea.attribute_id
+INNER JOIN eav_attribute_option_value AS eaov ON eaov.option_id = eao.option_id
+INNER JOIN catalog_product_entity_cache AS cpv ON eaov.option_id = cpv.value
+GROUP BY cpv.category_id,
+         ea.attribute_id,
+         ea.attribute_code,
+         ea.frontend_label,
+         eaov.option_id,
+         eaov.value;
+
+
+DROP INDEX catalog_product_entity_cache_by_category_index ON catalog_product_entity_cache;
+
+
+CREATE INDEX catalog_product_entity_cache_by_category_index ON catalog_product_entity_cache (category_id);
+
+ -- cache min/max price for each category and customer group
+
+DROP TABLE IF EXISTS catalog_product_entity_group_price_minmax_by_category;
+
+
+CREATE TABLE catalog_product_entity_group_price_minmax_by_category AS
+SELECT category.category_id,
+       price.customer_group_id,
+       FLOOR(min(price.value)) AS MIN,
+       FLOOR(max(price.value)) AS MAX
+FROM catalog_product_entity_group_price price
+INNER JOIN catalog_category_product_relations AS category ON price.entity_id = category.product_id
+WHERE value IS NOT NULL
+GROUP BY category.category_id,
+         price.customer_group_id;
+
+
+DROP INDEX catalog_product_entity_group_price_minmax_by_category_ix ON catalog_product_entity_group_price_minmax_by_category;
+
+
+CREATE INDEX catalog_product_entity_group_price_minmax_by_category_ix ON catalog_product_entity_group_price_minmax_by_category (category_id, customer_group_id);
+
+</code></pre>
+
+
+        </div>
+
+        <div class="page">
+            <h1>New Code</h1>
+            <h2>Objects</h2>
+
+            <pre><code class="php">
+namespace Exagoga\Query;
+
+class Custom {
+    private static $limitationFilters = false;
+    private static $productCollection = false;
+    private static $productCollectionLoaded = false;
+    private static $productIdsLoaded = array();
+    private static $categoryAttributesByCode = false;
+
+    private function productCollection (Mage_Catalog_Block_Product_List $mageCatalogBlockProductList) {
+        if (self::$productCollection === false) {
+            self::$productCollection = $mageCatalogBlockProductList->_getProductCollection(); 
+        }
+        return self::$productCollection;
+    }
+
+    private function db () {
+        return \Mage::getSingleton('core/resource')->getConnection('core_read');
+    }
+
+    public function setLimitationFilters (Mage_Catalog_Block_Product_List $mageCatalogBlockProductList) {
+        self::$limitationFilters = $this->productCollection($mageCatalogBlockProductList)->getLimitationFilters();
+    }
+
+    public function getLimitationFilters () {
+        return self::$limitationFilters;
+    }
+
+    public function setProductIdsFiltered (Mage_Catalog_Block_Product_List $mageCatalogBlockProductList) {
+        $productCollectionLoaded = $mageCatalogBlockProductList->getLoadedProductCollection();
+        foreach ($productCollectionLoaded as $product) {
+            self::$productIdsLoaded[] = $product->getId();
+        }
+    }
+
+    public function getProductIdsFiltered () {
+        return self::$productIdsLoaded;
+    }
+
+    public function getProductLoadedImagesById () {
+        if (count(self::$productIdsLoaded) < 1) {
+            return array();
+        }
+        $productIdsString = implode(', ', self::$productIdsLoaded);
+        $images = array();
+        $sql = "SELECT main.entity_id, main.value_id, main.value AS file, value.label, value.position, value.disabled, default_value.label AS label_default, default_value.position AS position_default, default_value.disabled AS disabled_default FROM catalog_product_entity_media_gallery AS main LEFT JOIN catalog_product_entity_media_gallery_value AS value ON main.value_id = value.value_id AND value.store_id = 1 LEFT JOIN catalog_product_entity_media_gallery_value AS default_value ON main.value_id = default_value.value_id AND default_value.store_id = 0 WHERE (main.attribute_id = '88') AND (main.entity_id IN (" . $productIdsString . ")) AND default_value.disabled = 0 ORDER BY main.entity_id ASC, IF(value.position IS NULL, default_value.position, value.position) ASC";
+        $results = $this->db()->query($sql)->fetchAll();
+        foreach ($results as $result) {
+            $images[$result['entity_id']][] = $result;
+        }
+        return $images;
+    }
+
+    public function getProductPriceRangeFiltered () {
+        if (self::$limitationFilters === false) {
+            return array('min' => 0, 'max' => 100);
+        }
+        $sql = 'SELECT min, max
+                FROM catalog_product_entity_group_price_minmax_by_category
+                WHERE customer_group_id = ' . self::$limitationFilters['customer_group_id'] . ' AND
+                    category_id = ' . self::$limitationFilters['category_id'] . ' OR
+                    (category_id IN (SELECT entity_id
+                        FROM catalog_category_entity
+                        WHERE parent_id = ' . self::$limitationFilters['category_id'] . '))';
+        $prices = $this->db()->query($sql)->fetchAll();
+        return array('min' => (int)$prices[0]['min'], 'max' => (int)$prices[0]['max']);
+    }
+
+    private function populateAttributesByCategory () {
+        if (self::$limitationFilters === false) {
+            return;
+        }
+        $sql = 'SELECT attribute_code, value as label, option_id AS value, count FROM catalog_product_entity_cache_by_category WHERE category_id = ' . self::$limitationFilters['category_id'] . ' OR category_id IN (SELECT entity_id FROM catalog_category_entity WHERE parent_id = ' . self::$limitationFilters['category_id'] . ')';
+        self::$categoryAttributesByCode = array();
+        $results = $this->db()->query($sql)->fetchAll();
+        foreach ($results as $result) {
+            $code = $result['attribute_code'];
+            unset($result['attribute_code']);
+            self::$categoryAttributesByCode[$code][] = $result;
+        }
+    }
+
+    public function getImplicitCategoryAttributes ($attribute) {
+        if (self::$categoryAttributesByCode === false) {
+            $this->populateAttributesByCategory();
+        }
+        if (!isset(self::$categoryAttributesByCode[$attribute])) {
+            return array();
+        }
+        return self::$categoryAttributesByCode[$attribute];
+    }
+}
+            </code></pre>
+
         </div>
 
 <script>
