@@ -3289,7 +3289,7 @@ nv.models.discreteBarChart = function() {
     , y
     , noData = "No Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'beforeUpdate')
-    , transitionDuration = 250
+    , transitionDuration = 0
     ;
 
   xAxis
