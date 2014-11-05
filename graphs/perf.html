@@ -42,7 +42,7 @@ pre {
 
             <br>
 
-            <p>This report covers the specific optimizations made to the catalog list display of the imaestri.com website and their impact. The hope is that this resource can help making the entire imaestri.com website performant while adhering to the best practices of Magento. 
+            <p>This report covers the specific optimizations made to the catalog list display of the company's Magento based website. 
             </p>
         </div>
         <div class="page">
@@ -130,7 +130,7 @@ It is well established within the Magento community that the “isSaleable” ca
 
 <i>Reference:</i><br>
 <pre>
-app/design/frontend/enterprise/exagoga/template/catalog/product/list.phtml
+app/design/frontend/enterprise/company/template/catalog/product/list.phtml
 lines: 109, 208
 $_product->isSaleable()
 </pre>
@@ -149,7 +149,7 @@ The catalogs display page shows a grid of images where each images is a slider o
 
 <i>Reference:</i><br>
 <pre>
-app/design/frontend/enterprise/exagoga/template/catalog/product/list.phtml
+app/design/frontend/enterprise/company/template/catalog/product/list.phtml
 lines: 62, 168
 $images = $product->getMediaGalleryImages();
 </pre>
@@ -174,7 +174,7 @@ app/code/local/Pixafy/Advfilters/Model/Catalog/Layer/Filter/Attribute.php
 lines: 142 - 275
 protected function _getItemsData()
 
-app/design/frontend/enterprise/exagoga/template/rangefilters/catalog/layer/filter/price.phtml
+app/design/frontend/enterprise/company/template/rangefilters/catalog/layer/filter/price.phtml
 lines: 6-17
 $minMaxPrices  =  Mage::helper('rangefilters')->calculateMinMaxPrice($this->getItems());
 </pre>
